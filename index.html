@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইউটিউব মোমেন্টাম ট্র্যাকার প্রো</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 100%);
+            color: #e2e8f0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+        }
+        
+        header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        header p {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+        
+        /* ADD VIDEO SECTION */
+        .add-video-section {
+            background: #1e293b;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .add-video-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fbbf24;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 150px 100px;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"], input[type="number"] {
+            padding: 10px 12px;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 13px;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #1a1f3a;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+        
+        .label {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        /* VIDEO CARDS */
+        .videos-container {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .video-card {
+            background: #1e293b;
+            border-left: 5px solid #667eea;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .video-card:hover {
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+            border-left-color: #764ba2;
+        }
+        
+        .video-header {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+            padding: 15px 20px;
+            border-bottom: 1px solid #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .video-header:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.15) 0%, transparent 100%);
+        }
+        
+        .video-title-block {
+            flex: 1;
+        }
+        
+        .video-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 5px;
+        }
+        
+        .video-meta {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: #667eea;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+        }
+        
+        .toggle-btn:hover {
+            color: #764ba2;
+            transform: scale(1.1);
+        }
+        
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: #b91c1c;
+            transform: scale(1.05);
+        }
+        
+        .video-body {
+            max-height: 5000px;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 20px;
+        }
+        
+        .video-body.collapsed {
+            max-height: 0;
+            padding: 0 20px;
+        }
+        
+        /* DAY SECTIONS */
+        .day-section {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .day-section.day2 {
+            border-left-color: #08a88a;
+        }
+        
+        .day-section.day3plus {
+            border-left-color: #fbbf24;
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        
+        .day-header:hover {
+            opacity: 0.8;
+        }
+        
+        .day-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .day-label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .day-time {
+            font-size: 12px;
+            color: #cbd5e1;
+            background: #1e293b;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .day-toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+            color: #667eea;
+        }
+        
+        .day-toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .day-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+        
+        .day-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+        
+        .data-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .input-group input {
+            padding: 8px 10px;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 5px;
+            color: #e2e8f0;
+            font-size: 12px;
+        }
+        
+        /* METRICS DISPLAY */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        
+        .metric-box {
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .metric-box.positive {
+            border-left-color: #16a34a;
+            background: rgba(22, 163, 74, 0.1);
+        }
+        
+        .metric-box.negative {
+            border-left-color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+        
+        .metric-box.neutral {
+            border-left-color: #ea580c;
+        }
+        
+        .metric-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 3px;
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        /* DECISION BOX */
+        .decision-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+        }
+        
+        .decision-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .decision-status {
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .status-delay {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+        }
+        
+        .status-wait {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            color: white;
+        }
+        
+        .status-upload {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+        
+        .decision-reason {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        
+        /* ANALYSIS SECTION */
+        .analysis-box {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #475569;
+        }
+        
+        .analysis-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+        
+        .analysis-text {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state-text {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 20px;
+            }
+            
+            .video-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-actions {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 ইউটিউব মোমেন্টাম ট্র্যাকার প্রো</h1>
+            <p>রূহের দৃষ্টি - স্মার্ট কলাপ্স ও সঠিক ডিসিশন লজিক</p>
+        </header>
+        
+        <div class="add-video-section">
+            <div class="add-video-title">➕ নতুন ভিডিও যোগ করুন</div>
+            
+            <div>
+                <label class="label">ভিডিও শিরোনাম</label>
+                <div class="input-row">
+                    <input type="text" id="newVideoTitle" placeholder="যেমন: গরিব বলে বোনকে দাওয়াত দেননি...">
+                    <div>
+                        <label class="label">ভিডিও লেংথ (MM:SS বা মিনিট)</label>
+                        <input type="text" id="newVideoLength" placeholder="17:23 বা 17.5" style="width: 100%;">
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button class="btn-add" onclick="tracker.addVideo()">যোগ করুন</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="videos-container" id="videosContainer">
+            <div class="empty-state">
+                <div class="empty-state-icon">🎬</div>
+                <div class="empty-state-text">কোনো ভিডিও যোগ করা হয়নি।<br>উপরে নতুন ভিডিও যোগ করুন এবং শুরু করুন!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class VideoTracker {
+            constructor() {
+                this.videos = JSON.parse(localStorage.getItem('ytTrackerVideos')) || [];
+                this.collapsedVideos = JSON.parse(localStorage.getItem('collapsedVideos')) || {};
+                this.collapsedDays = JSON.parse(localStorage.getItem('collapsedDays')) || {};
+                this.render();
+            }
+
+            parseTimeInput(val) {
+                val = val.trim();
+                if (val.includes(':')) {
+                    const parts = val.split(':');
+                    const mins = parseFloat(parts[0]) || 0;
+                    const secs = parseFloat(parts[1]) || 0;
+                    return mins + secs / 60;
+                }
+                return parseFloat(val) || 0;
+            }
+
+            addVideo() {
+                const titleInput = document.getElementById('newVideoTitle');
+                const lengthInput = document.getElementById('newVideoLength');
+                const title = titleInput.value.trim();
+                const lengthRaw = lengthInput.value.trim();
+
+                if (!title || !lengthRaw) {
+                    alert('সব ফিল্ড পূরণ করুন!');
+                    return;
+                }
+
+                const length = this.parseTimeInput(lengthRaw);
+
+                const video = {
+                    id: Date.now(),
+                    title: title,
+                    length: length,
+                    days: {},
+                    createdAt: new Date().toLocaleString('bn-BD')
+                };
+
+                this.videos.push(video);
+                this.save();
+                this.render();
+                
+                titleInput.value = '';
+                lengthInput.value = '';
+            }
+
+            deleteVideo(id) {
+                if (confirm('এই ভিডিও মুছে দিতে চান?')) {
+                    this.videos = this.videos.filter(v => v.id !== id);
+                    delete this.collapsedVideos[id];
+                    delete this.collapsedDays[id];
+                    this.save();
+                    this.render();
+                }
+            }
+
+            toggleVideo(id) {
+                this.collapsedVideos[id] = !this.collapsedVideos[id];
+                localStorage.setItem('collapsedVideos', JSON.stringify(this.collapsedVideos));
+                this.render();
+            }
+
+            toggleDay(videoId, dayNumber) {
+                if (!this.collapsedDays[videoId]) {
+                    this.collapsedDays[videoId] = {};
+                }
+                this.collapsedDays[videoId][`day${dayNumber}`] = !this.collapsedDays[videoId][`day${dayNumber}`];
+                localStorage.setItem('collapsedDays', JSON.stringify(this.collapsedDays));
+                this.render();
+            }
+
+            updateDayData(videoId, dayNumber, data) {
+                const video = this.videos.find(v => v.id === videoId);
+                if (video) {
+                    video.days[`day${dayNumber}`] = data;
+                    this.save();
+                    this.render();
+                }
+            }
+
+            makeDecision(video) {
+                const days = video.days;
+                const day1 = days.day1;
+                const day2 = days.day2;
+                const day3 = days.day3;
+
+                if (!day1) {
+                    return {
+                        status: 'wait',
+                        emoji: '⏳',
+                        title: 'অপেক্ষা করুন',
+                        message: 'Day 1 (রাত ৯টা) এর ডেটা জমা দিন'
+                    };
+                }
+
+                if (!day2) {
+                    return {
+                        status: 'wait',
+                        emoji: '⏳',
+                        title: 'অপেক্ষা করুন',
+                        message: 'Day 2 (রাত ৯টা) এর ডেটা জমা দিন'
+                    };
+                }
+
+                // Calculate growth metrics
+                const viewGrowth = day1.views && day2.views ? 
+                    (((day2.views - day1.views) / day1.views) * 100) : 0;
+                const ctr2 = parseFloat(day2.ctr) || 0;
+                const avd2 = parseFloat(day2.avd) || 0;
+
+                // Check for delayed spike in Day 3
+                if (day3) {
+                    const day3ViewGrowth = day2.views && day3.views ?
+                        (((day3.views - day2.views) / day2.views) * 100) : 0;
+                    const ctr3 = parseFloat(day3.ctr) || 0;
+                    const avd3 = parseFloat(day3.avd) || 0;
+
+                    // Weighted AVD threshold — growth যত বেশি, AVD condition তত relax
+                    let avdThreshold;
+                    if (day3ViewGrowth > 200 || ctr3 >= 6) {
+                        avdThreshold = video.length * 0.20; // explosive growth — AVD কম হলেও চলে
+                    } else if (day3ViewGrowth > 100) {
+                        avdThreshold = video.length * 0.22;
+                    } else {
+                        avdThreshold = video.length * 0.25; // normal case
+                    }
+
+                    if (day3ViewGrowth > 50 && ctr3 >= 5 && avd3 > avdThreshold) {
+                        return {
+                            status: 'delay',
+                            emoji: '⏹️',
+                            title: 'আপলোড ৪৮-৭২ ঘণ্টা ডিলে করুন',
+                            message: `🚀 শক্তিশালী বিলম্বিত মোমেন্টাম শুরু হয়েছে!\n\n📊 Day 3 Status:\n• ভিউ গ্রোথ (Day 2→3): ${day3ViewGrowth.toFixed(0)}%\n• CTR: ${ctr3}%\n• AVD: ${avd3.toFixed(2)} মিনিট (${(avd3/video.length*100).toFixed(0)}% completion)\n• Impressions: ${day3.impressions}\n\n⏸️ পরবর্তী আপলোড কমপক্ষে ৪৮-৭২ ঘণ্টা পিছিয়ে দিন।\nএই ভিডিওটি তার পূর্ণ সম্ভাবনা অর্জন করতে দিন।`
+                        };
+                    }
+
+                    // Moderate Day 3 performance
+                    if (day3ViewGrowth > 30 || ctr3 >= 4.5) {
+                        return {
+                            status: 'wait',
+                            emoji: '📈',
+                            title: 'আরও পর্যবেক্ষণ করুন',
+                            message: `ভিডিওটি এখনও বাড়ছে, কিন্তু গতি স্লো হয়েছে।\n\nDay 4 ডেটা যোগ করে সিদ্ধান্ত নিন।`
+                        };
+                    }
+
+                    // Weak Day 3
+                    return {
+                        status: 'upload',
+                        emoji: '✅',
+                        title: 'সময়মতো আপলোড করুন',
+                        message: `Day 3 এ গতি ধীর হয়েছে। পরবর্তী ভিডিও নির্ধারিত সময়ে আপলোড করুন।`
+                    };
+                }
+
+                // No Day 3 yet - evaluate Day 1 & 2
+                const hasStrongDay2 = viewGrowth > 50 && ctr2 >= 5;
+                
+                if (hasStrongDay2) {
+                    return {
+                        status: 'wait',
+                        emoji: '🤔',
+                        title: 'Day 3 ডেটা দিন',
+                        message: `Day 2 শক্তিশালী দেখাচ্ছে (গ্রোথ: ${viewGrowth.toFixed(0)}%, CTR: ${ctr2}%)।\n\nDay 3 ডেটা যোগ করলে আমি ডিসিশন নিতে পারব।`
+                    };
+                }
+
+                const hasModerateDay2 = viewGrowth > 20 || ctr2 >= 4.5;
+                
+                if (hasModerateDay2) {
+                    return {
+                        status: 'wait',
+                        emoji: '⏳',
+                        title: 'আরও ডেটা লাগবে',
+                        message: `Day 2 মোটামুটি দেখাচ্ছে (গ্রোথ: ${viewGrowth.toFixed(0)}%)।\n\nDay 3 ডেটা পেলে সঠিক সিদ্ধান্ত নিতে পারব।`
+                    };
+                }
+
+                // Weak performance
+                return {
+                    status: 'upload',
+                    emoji: '✅',
+                    title: 'সময়মতো আপলোড করুন',
+                    message: `ভিডিওটি ধীরে বাড়ছে। পরবর্তী ভিডিও নির্ধারিত সময়ে আপলোড করুন।`
+                };
+            }
+
+            renderVideo(video) {
+                const days = video.days;
+                const decision = this.makeDecision(video);
+                const isCollapsed = this.collapsedVideos[video.id];
+                const videoCollapsedDays = this.collapsedDays[video.id] || {};
+                
+                let daysHtml = '';
+                let maxDays = 6;
+
+                for (let i = 1; i <= maxDays; i++) {
+                    const day = days[`day${i}`];
+                    const dayLabel = i === 1 ? 'Day 1' : i === 2 ? 'Day 2' : i === 3 ? 'Day 3' : `Day ${i}`;
+                    const timeLabel = i <= 2 ? 'রাত ৯:০০ PM' : 'রাত ৮:০০ PM';
+                    
+                    const daySection = i === 1 ? '' : i === 2 ? 'day2' : 'day3plus';
+                    const isDayCollapsed = videoCollapsedDays[`day${i}`];
+                    
+                    if (day) {
+                        const views = parseFloat(day.views);
+                        const ctr = parseFloat(day.ctr);
+                        const avd = parseFloat(day.avd);
+                        const impressions = parseFloat(day.impressions);
+
+                        let metrics = '';
+                        if (i > 1) {
+                            const prevDay = days[`day${i-1}`];
+                            if (prevDay) {
+                                const prevViews = parseFloat(prevDay.views);
+                                const viewGrowth = ((views - prevViews) / prevViews * 100).toFixed(0);
+                                const prevImp = parseFloat(prevDay.impressions);
+                                const impGrowth = ((impressions - prevImp) / prevImp * 100).toFixed(0);
+                                
+                                metrics = `
+                                    <div class="metrics-row">
+                                        <div class="metric-box ${viewGrowth > 30 ? 'positive' : 'negative'}">
+                                            <div class="metric-value">${viewGrowth}%</div>
+                                            <div class="metric-label">ভিউ গ্রোথ (Day ${i-1}→${i})</div>
+                                        </div>
+                                        <div class="metric-box ${impGrowth > 20 ? 'positive' : 'negative'}">
+                                            <div class="metric-value">${impGrowth}%</div>
+                                            <div class="metric-label">Impression গ্রোথ</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        daysHtml += `
+                            <div class="day-section ${daySection}">
+                                <div class="day-header" onclick="tracker.toggleDay(${video.id}, ${i})">
+                                    <div class="day-header-left">
+                                        <span class="day-label">📅 ${dayLabel}</span>
+                                        <span class="day-time">${timeLabel}</span>
+                                    </div>
+                                    <span class="day-toggle-icon ${isDayCollapsed ? 'collapsed' : ''}">⏷</span>
+                                </div>
+                                
+                                <div class="day-content ${isDayCollapsed ? 'collapsed' : ''}">
+                                    <div class="data-inputs">
+                                        <div class="input-group">
+                                            <label>Views</label>
+                                            <input type="text" value="${day.views}" disabled style="background: #1a1f3a; cursor: not-allowed;">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Click-Through Rate (%)</label>
+                                            <input type="text" value="${parseFloat(day.ctr).toFixed(2)}" disabled style="background: #1a1f3a; cursor: not-allowed;">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Avg View Duration</label>
+                                            <input type="text" value="${Math.floor(parseFloat(day.avd))}:${String(Math.round((parseFloat(day.avd) % 1) * 60)).padStart(2,'0')}" disabled style="background: #1a1f3a; cursor: not-allowed;">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Impressions</label>
+                                            <input type="text" value="${day.impressions}" disabled style="background: #1a1f3a; cursor: not-allowed;">
+                                        </div>
+                                    </div>
+                                    
+                                    ${metrics}
+                                </div>
+                            </div>
+                        `;
+                    } else if (i <= 3 || (i > 3 && days[`day${i-1}`])) {
+                        const isDayCollapsed = videoCollapsedDays[`day${i}`];
+                        const timeLabel = i <= 2 ? 'রাত ৯:০০ PM' : 'রাত ৮:০০ PM';
+                        daysHtml += `
+                            <div class="day-section ${daySection}">
+                                <div class="day-header" onclick="tracker.toggleDay(${video.id}, ${i})">
+                                    <div class="day-header-left">
+                                        <span class="day-label">📅 ${dayLabel}</span>
+                                        <span class="day-time">${timeLabel}</span>
+                                    </div>
+                                    <span class="day-toggle-icon ${isDayCollapsed ? 'collapsed' : ''}">⏷</span>
+                                </div>
+                                
+                                <div class="day-content ${isDayCollapsed ? 'collapsed' : ''}">
+                                    <div class="data-inputs">
+                                        <div class="input-group">
+                                            <label>Views</label>
+                                            <input type="number" id="views_${video.id}_${i}" placeholder="0">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Click-Through Rate (%)</label>
+                                            <input type="number" id="ctr_${video.id}_${i}" placeholder="0.0" step="0.1">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Avg View Duration (MM:SS বা মিনিট)</label>
+                                            <input type="text" id="avd_${video.id}_${i}" placeholder="4:06 বা 4.1">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Impressions</label>
+                                            <input type="number" id="imp_${video.id}_${i}" placeholder="0">
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn-add" onclick="tracker.submitDayData(${video.id}, ${i})" style="width: 100%; margin-top: 10px;">জমা দিন (Day ${i})</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                let statusClass = decision.status;
+                let analysisHtml = '';
+
+                if (Object.keys(days).length > 0) {
+                    const day1 = days.day1;
+                    const day2 = days.day2;
+                    const day3 = days.day3;
+
+                    let analysisText = `📋 ভিডিও বিশ্লেষণ রিপোর্ট\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+                    analysisText += `📹 শিরোনাম: ${video.title}\n`;
+                    analysisText += `⏱️ লেংথ: ${Math.floor(video.length)}:${String(Math.round((video.length % 1) * 60)).padStart(2,'0')} মিনিট\n`;
+                    analysisText += `📅 তৈরি: ${video.createdAt}\n\n`;
+
+                    if (day1) {
+                        analysisText += `Day 1 স্ট্যাটাস:\n`;
+                        analysisText += `  • Views: ${day1.views} | CTR: ${day1.ctr}% | AVD: ${day1.avd}m | Impressions: ${day1.impressions}\n\n`;
+                    }
+
+                    if (day2) {
+                        const growth = day1 ? (((day2.views - day1.views) / day1.views) * 100).toFixed(0) : 0;
+                        analysisText += `Day 2 স্ট্যাটাস:\n`;
+                        analysisText += `  • Views: ${day2.views} (${growth > 0 ? '+' : ''}${growth}%) | CTR: ${day2.ctr}% | AVD: ${day2.avd}m\n\n`;
+                    }
+
+                    if (day3) {
+                        const growth = day2 ? (((day3.views - day2.views) / day2.views) * 100).toFixed(0) : 0;
+                        analysisText += `Day 3 স্ট্যাটাস:\n`;
+                        analysisText += `  • Views: ${day3.views} (${growth > 0 ? '+' : ''}${growth}%) | CTR: ${day3.ctr}% | AVD: ${day3.avd}m\n`;
+                    }
+
+                    analysisHtml = `<div class="analysis-box">
+                        <div class="analysis-title">📊 বিস্তারিত বিশ্লেষণ</div>
+                        <div class="analysis-text">${analysisText}</div>
+                    </div>`;
+                }
+
+                return `
+                    <div class="video-card">
+                        <div class="video-header" onclick="tracker.toggleVideo(${video.id})">
+                            <div class="video-title-block">
+                                <div class="video-title">${video.title}</div>
+                                <div class="video-meta">⏱️ ${Math.floor(parseFloat(video.length))}:${String(Math.round((parseFloat(video.length) % 1) * 60)).padStart(2,'0')} মিনিট | 📅 ${video.createdAt}</div>
+                            </div>
+                            <div class="header-actions">
+                                <button class="toggle-btn" title="ভিডিও ${isCollapsed ? 'প্রসারিত' : 'সংকুচিত'} করুন">${isCollapsed ? '▶' : '▼'}</button>
+                                <button class="delete-btn" onclick="tracker.deleteVideo(${video.id})" title="ভিডিও মুছুন">✕</button>
+                            </div>
+                        </div>
+                        
+                        <div class="video-body ${isCollapsed ? 'collapsed' : ''}">
+                            ${daysHtml}
+                            
+                            <div class="decision-container">
+                                <div class="decision-title">${decision.emoji} সিদ্ধান্ত</div>
+                                <div class="decision-status status-${statusClass}">${decision.title}</div>
+                                <div class="decision-reason">${decision.message}</div>
+                            </div>
+
+                            ${analysisHtml}
+                        </div>
+                    </div>
+                `;
+            }
+
+            render() {
+                const container = document.getElementById('videosContainer');
+                
+                if (this.videos.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎬</div>
+                            <div class="empty-state-text">কোনো ভিডিও যোগ করা হয়নি।<br>উপরে নতুন ভিডিও যোগ করুন এবং শুরু করুন!</div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = this.videos.map(v => this.renderVideo(v)).join('');
+                }
+            }
+
+            submitDayData(videoId, dayNumber) {
+                const views = document.querySelector(`#views_${videoId}_${dayNumber}`)?.value;
+                const ctr = document.querySelector(`#ctr_${videoId}_${dayNumber}`)?.value;
+                const avdRaw = document.querySelector(`#avd_${videoId}_${dayNumber}`)?.value;
+                const impressions = document.querySelector(`#imp_${videoId}_${dayNumber}`)?.value;
+
+                if (!views || !ctr || !avdRaw || !impressions) {
+                    alert('সব ফিল্ড পূরণ করুন!');
+                    return;
+                }
+
+                const avd = this.parseTimeInput(avdRaw);
+
+                this.updateDayData(videoId, dayNumber, {
+                    views: parseInt(views),
+                    ctr: parseFloat(ctr),
+                    avd: avd,
+                    impressions: parseInt(impressions)
+                });
+
+                alert(`Day ${dayNumber} ডেটা সফলভাবে জমা পড়েছে!`);
+            }
+
+            save() {
+                localStorage.setItem('ytTrackerVideos', JSON.stringify(this.videos));
+            }
+        }
+
+        let tracker;
+        document.addEventListener('DOMContentLoaded', () => {
+            tracker = new VideoTracker();
+        });
+
+        document.getElementById('newVideoTitle')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('newVideoLength').focus();
+            }
+        });
+
+        document.getElementById('newVideoLength')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                tracker.addVideo();
+            }
+        });
+    </script>
+</body>
+</html>
