@@ -422,7 +422,8 @@ function makeDecision(video) {
         const homeD3  = d3.srcHome - (d2.srcHome || 0);
         const upnextD3 = d3.srcUpnext - (d2.srcUpnext || 0);
         const totalSrcD3 = homeD3 + upnextD3;
-        const algoRatioD3 = d3.views > 0 ? (totalSrcD3 / d3.views * 100) : 0;
+        const dayOnlyViewsD3 = d2.views ? (d3.views - d2.views) : d3.views;
+        const algoRatioD3 = dayOnlyViewsD3 > 0 ? (totalSrcD3 / dayOnlyViewsD3 * 100) : 0;
 
         const isAlgo = ['upnext','home','notification','otheryt'].includes(src3);
         const isUpNext = src3 === 'upnext';
@@ -595,7 +596,8 @@ class Tracker {
         const homeD  = day.srcHome   - (prevDay?.srcHome   || 0);
         const upD    = day.srcUpnext - (prevDay?.srcUpnext || 0);
         const totalD = homeD + upD;
-        const algoRatio = day.views > 0 ? (totalD / day.views * 100).toFixed(0) : 0;
+        const dayOnlyViews = prevDay ? (day.views - prevDay.views) : day.views;
+        const algoRatio = dayOnlyViews > 0 ? (totalD / dayOnlyViews * 100).toFixed(0) : 0;
         return `
         <div class="src-breakdown">
             <div style="font-size:10px;color:#667eea;font-weight:bold;margin-bottom:4px;">📍 Day ${dayNum} Traffic Source Breakdown</div>
@@ -670,10 +672,10 @@ class Tracker {
                     <div class="day-body ${isClosed?'collapsed':''}">
                         <div class="saved-data">
                             <div class="saved-row">
-                                <div class="saved-chip">Views <span>${fmtNum(day.views)}</span></div>
+                                <div class="saved-chip">Views <span>${prevDay ? fmtNum(day.views - prevDay.views) : fmtNum(day.views)}</span>${prevDay ? `<span style="color:#64748b;font-size:10px;"> (cumul: ${fmtNum(day.views)})</span>` : ''}</div>
                                 <div class="saved-chip">CTR <span>${day.ctr}%</span></div>
                                 <div class="saved-chip">AVD <span>${fmtTime(day.avd)}</span></div>
-                                <div class="saved-chip">Impressions <span>${fmtNum(day.impressions)}</span></div>
+                                <div class="saved-chip">Impressions <span>${prevDay ? fmtNum(day.impressions - prevDay.impressions) : fmtNum(day.impressions)}</span>${prevDay ? `<span style="color:#64748b;font-size:10px;"> (cumul: ${fmtNum(day.impressions)})</span>` : ''}</div>
                                 <div class="saved-chip">Completion <span>${completion}%</span></div>
                             </div>
                         </div>
@@ -696,7 +698,7 @@ class Tracker {
                     <div class="day-body ${isClosed?'collapsed':''}">
                         <div class="inputs-grid">
                             <div class="inp-group">
-                                <label>Views ${i > 1 ? '(K format OK: 1.2K)' : ''}</label>
+                                <label>Views ${i > 1 ? '(cumulative, K format OK)' : '(K format OK: 1.2K)'}</label>
                                 <input type="text" id="v_${video.id}_${i}" placeholder="${i===1?'315':'1.2K'}">
                             </div>
                             <div class="inp-group">
@@ -708,7 +710,7 @@ class Tracker {
                                 <input type="text" id="avd_${video.id}_${i}" placeholder="3:14">
                             </div>
                             <div class="inp-group">
-                                <label>Impressions (K OK)</label>
+                                <label>Impressions (cumulative, K OK)</label>
                                 <input type="text" id="imp_${video.id}_${i}" placeholder="7.8K">
                             </div>
                         </div>
